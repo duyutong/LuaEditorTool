@@ -1,0 +1,6 @@
+.unity-label {
+    width: 80px;
+    min-width: 60px;
+    margin-left: 3px;
+    -unity-text-align: middle-left;
+}

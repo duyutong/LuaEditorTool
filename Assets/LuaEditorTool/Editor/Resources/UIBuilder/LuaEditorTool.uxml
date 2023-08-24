@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/LuaEditorTool/Editor/Resources/UIBuilder/LuaEditorTool.uss?fileID=7433441132597879392&amp;guid=754dbb1699b3c2645ad144705408d1d4&amp;type=3#LuaEditorTool" />
+    <ui:TextField picking-mode="Ignore" label="Path Field" value="filler text" text="filler text" name="pathField" style="width: auto;" />
+    <ui:VisualElement style="flex-direction: row; margin-left: 3px; margin-right: 3px; margin-top: 1px; margin-bottom: 1px;">
+        <uie:ObjectField label="ObjectField" name="objectField" type="UnityEngine.Object, UnityEngine.CoreModule" style="flex-grow: 1; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;" />
+        <ui:Toggle name="objToggle" value="true" label="needAsset" />
+    </ui:VisualElement>
+    <ui:Label text="*Please enter your Lua code in the input box below:" display-tooltip-when-elided="true" style="padding-top: 2px;" />
+    <ui:ScrollView style="flex-grow: 1; background-color: rgb(42, 42, 42); border-top-width: 0; border-top-left-radius: 3px; border-bottom-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; margin-top: 10px; margin-bottom: 10px; padding-bottom: 0; -unity-slice-bottom: 0;">
+        <ui:TextField picking-mode="Ignore" value="filler text" text="if #prefabTableName# ~= nil then&#10;&#x9;-- 预制体处理逻辑&#10;&#x9;-- 如果需要处理资源，资源名为#assetName#" multiline="true" focusable="true" name="luaScriptTop" style="height: auto; align-items: center; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;" />
+        <ui:TextField picking-mode="Ignore" text="print(&quot;check object&quot;, #prefabTableName#.name)" multiline="true" name="luaScript" style="align-items: auto; flex-grow: 1; flex-direction: row; height: auto; margin-left: 50px; margin-right: 0; margin-top: 0; margin-bottom: 0; -unity-slice-left: 0; padding-top: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; background-color: rgb(42, 42, 42); top: auto; justify-content: space-around; flex-basis: auto; flex-shrink: 1; white-space: nowrap; transform-origin: center; bottom: auto; padding-bottom: 0; padding-left: 0; padding-right: 0;" />
+        <ui:TextField picking-mode="Ignore" value="filler text" text="else&#10;&#x9;print(&quot;No game object selected.&quot;)&#x9;&#10;end" multiline="true" name="luaScriptButtom" style="height: auto; align-items: center; bottom: auto; top: auto; position: relative; -unity-text-align: upper-left; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
+    </ui:ScrollView>
+    <ui:Button text="Execute" display-tooltip-when-elided="true" name="executeBtn" enable-rich-text="false" style="width: 100px; right: auto; position: relative; transform-origin: center; display: flex;" />
+</ui:UXML>
