@@ -12,7 +12,7 @@ using Unity.VisualScripting;
 public class LuaEditorTool : EditorWindow
 {
     private VisualTreeAsset visualTreeAsset = default;
-    internal static LuaEnv luaEnv = new LuaEnv(); //all lua behaviour shared one luaenv only!
+    internal static LuaEnv luaEnv; //all lua behaviour shared one luaenv only!
 
     private TextField luaScriptTop;
     private TextField luaScriptBottom;
@@ -22,6 +22,7 @@ public class LuaEditorTool : EditorWindow
 
     private string objTableName = "asset";
     private string prefabTableName = "prefab";
+    private string dirtyTableName = "checkDirty";
 
     private TextField pathField;
     private string prePath;
@@ -30,27 +31,30 @@ public class LuaEditorTool : EditorWindow
     private List<string> prefabPathList = new List<string>();
     private LuaTable scriptEnv;
 
+    private bool checkDirty;
+
     [MenuItem("Tools/LuaEditorTool")]
     public static void ShowExample()
     {
         LuaEditorTool wnd = GetWindow<LuaEditorTool>();
         wnd.titleContent = new GUIContent("LuaEditorTool");
+        wnd.minSize = new Vector2(670, 320);
+        wnd.maxSize = new Vector2(1000, 600);
     }
 
     public void CreateGUI()
     {
-        if (scriptEnv == null)
-        {
-            scriptEnv = luaEnv.NewTable();
+        luaEnv = new LuaEnv();
+        scriptEnv = luaEnv.NewTable();
 
-            // 为每个脚本设置一个独立的环境，可一定程度上防止脚本间全局变量、函数冲突
-            LuaTable meta = luaEnv.NewTable();
-            meta.Set("__index", luaEnv.Global);
-            scriptEnv.SetMetaTable(meta);
-            meta.Dispose();
+        // 为每个脚本设置一个独立的环境，可一定程度上防止脚本间全局变量、函数冲突
+        LuaTable meta = luaEnv.NewTable();
+        meta.Set("__index", luaEnv.Global);
+        scriptEnv.SetMetaTable(meta);
+        meta.Dispose();
 
-            scriptEnv.Set("self", this);
-        }
+        scriptEnv.Set("self", this);
+        scriptEnv.Set(dirtyTableName, checkDirty);
 
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
@@ -58,7 +62,7 @@ public class LuaEditorTool : EditorWindow
         visualTreeAsset.CloneTree(root);
 
         objToggle = root.Q<Toggle>("objToggle");
-        objToggle.SetValueWithoutNotify(true);
+        objToggle.SetValueWithoutNotify(false);
         objToggle.RegisterValueChangedCallback(OnObjToggleChanged);
 
         objectField = root.Q<ObjectField>("objectField");
@@ -75,6 +79,7 @@ public class LuaEditorTool : EditorWindow
         string luaTop = luaScriptTop.text;
         luaTop = luaTop.Replace("#prefabTableName#", prefabTableName);
         luaTop = luaTop.Replace("#assetName#", objTableName);
+        luaTop = luaTop.Replace("#dirtyTableName#", dirtyTableName);
         luaScriptTop.SetValueWithoutNotify(luaTop);
         luaScriptTop.SetEnabled(false);
 
@@ -119,17 +124,24 @@ public class LuaEditorTool : EditorWindow
             GameObject prefab = AssetDatabase.LoadAssetAtPath(shortPath, typeof(GameObject)) as GameObject;
             scriptEnv.Set(prefabTableName, prefab);
             luaEnv.DoString(luaStr.ToString(), null, scriptEnv);
-            ReplacePrefab(shortPath, prefab);
+            scriptEnv.Get(dirtyTableName, out checkDirty);
+            //Debug.Log(prefab.name + " checkDirty：" + checkDirty);
+            if (checkDirty) 
+            {
+                EditorUtility.SetDirty(prefab);
+                ReplacePrefab(shortPath, prefab);
+            }
         }
+        
+        AssetDatabase.SaveAssets();
         Debug.Log("处理完毕！");
     }
     private void ReplacePrefab(string savePath,GameObject saveObj)
     {
-        // 将Prefab替换
         string _savePath = savePath.Replace(@"\", "/");
-        GameObject _saveObj = Instantiate(saveObj);
-        PrefabUtility.SaveAsPrefabAssetAndConnect(_saveObj, _savePath, InteractionMode.UserAction);
-        DestroyImmediate(_saveObj);
+        GUID guid = AssetDatabase.GUIDFromAssetPath(_savePath);
+        EditorUtility.SetDirty(saveObj);
+        AssetDatabase.SaveAssetIfDirty(guid);
     }
     private void OnGUI()
     {
@@ -173,6 +185,8 @@ public class LuaEditorTool : EditorWindow
     }
     private void OnDisable()
     {
+        luaEnv.Tick();
+        scriptEnv.Dispose();
         executeBtn.clicked -= OnClickExecuteBtn;
         pathField.UnregisterValueChangedCallback(OnPathValueChange);
     }
