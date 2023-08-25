@@ -2,6 +2,7 @@
 利用lua的动态编译特性，在编辑器模式批量修改预制体信息
 
 -- 这是一个替换预制体内所有Text组件字体的示例
+
 local textComponents = prefab:GetComponentsInChildren(typeof(CS.UnityEngine.UI.Text))
 local fontToReplace = asset
 
