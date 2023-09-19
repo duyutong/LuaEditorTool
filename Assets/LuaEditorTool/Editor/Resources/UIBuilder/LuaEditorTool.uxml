@@ -13,5 +13,5 @@
         </ui:VisualElement>
         <ui:TextField picking-mode="Ignore" value="filler text" text="else&#10;&#x9;print(&quot;No game object selected.&quot;)&#x9;&#10;end&#10;&#10;-- lua代码结束" multiline="true" name="luaScriptButtom" style="height: auto; align-items: center; bottom: auto; top: auto; position: relative; -unity-text-align: upper-left; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0;" />
     </ui:ScrollView>
-    <ui:Button text="Execute" display-tooltip-when-elided="true" name="executeBtn" enable-rich-text="false" style="width: 100px; right: auto; position: relative; transform-origin: center; display: flex;" />
+    <ui:Button text="Execute" display-tooltip-when-elided="true" name="executeBtn" enable-rich-text="false" class="executeBtn" />
 </ui:UXML>

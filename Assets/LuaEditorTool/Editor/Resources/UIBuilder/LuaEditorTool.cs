@@ -25,7 +25,7 @@ public class LuaEditorTool : EditorWindow
     private string dirtyTableName = "checkDirty";
 
     private TextField pathField;
-    private string prePath;
+    private string prefabPath;
     private Button executeBtn;
 
     private List<string> prefabPathList = new List<string>();
@@ -100,7 +100,7 @@ public class LuaEditorTool : EditorWindow
 
     private void OnPathValueChange(ChangeEvent<string> evt)
     {
-        prePath = evt.newValue;
+        prefabPath = evt.newValue;
     }
 
     private StringBuilder luaStr = new StringBuilder();
@@ -112,7 +112,7 @@ public class LuaEditorTool : EditorWindow
         luaStr.AppendLine(luaScriptBottom.text);
 
         prefabPathList.Clear();
-        CheckRes(prePath, ".prefab", (_path) => { prefabPathList.Add(_path); });
+        CheckRes(prefabPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
         //Debug.Log(luaStr.ToString());
         string dataPath = Application.dataPath.Replace("/", @"\") + @"\";
         if (objToggle.value) scriptEnv.Set(objTableName, objectField.value);
@@ -145,9 +145,9 @@ public class LuaEditorTool : EditorWindow
     }
     private void OnGUI()
     {
-        prePath = OnDrawElementAcceptDrop(pathField.contentRect, prePath);
-        pathField.SetValueWithoutNotify(prePath);
-        executeBtn.SetEnabled(!string.IsNullOrEmpty(prePath));
+        prefabPath = OnDrawElementAcceptDrop(pathField.contentRect, prefabPath);
+        pathField.SetValueWithoutNotify(prefabPath);
+        executeBtn.SetEnabled(!string.IsNullOrEmpty(prefabPath));
     }
     private string OnDrawElementAcceptDrop(Rect rect, string label)
     {
