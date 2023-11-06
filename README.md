@@ -15,6 +15,7 @@ end
 
 
 -- 这是一个为所有按钮添加点击音效组件的示例
+
 local btnComponents= prefab:GetComponentsInChildren(typeof(CS.UnityEngine.UI.Button))
 
 for i = 0, btnComponents.Length - 1 do
