@@ -38,7 +38,7 @@ public class DependentFinder : EditorWindow
     {
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
-        visualTreeAsset = Resources.Load<VisualTreeAsset>("UIBuilder/DependentFinder");
+        visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/DependentFinder/Editor/UIBuilder/DependentFinder.uxml");
         visualTreeAsset.CloneTree(root);
 
         InitCheckTypeList();

@@ -58,7 +58,7 @@ public class LuaEditorTool : EditorWindow
 
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
-        visualTreeAsset = Resources.Load<VisualTreeAsset>("UIBuilder/LuaEditorTool");
+        visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/LuaEditorTool/Editor/UIBuilder/LuaEditorTool.uxml");
         visualTreeAsset.CloneTree(root);
 
         objToggle = root.Q<Toggle>("objToggle");

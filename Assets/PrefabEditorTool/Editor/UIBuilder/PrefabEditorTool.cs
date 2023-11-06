@@ -38,7 +38,7 @@ public class PrefabEditorTool : EditorWindow
     {
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
-        visualTreeAsset = Resources.Load<VisualTreeAsset>("UIBuilder/PrefabEditorTool");
+        visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/PrefabEditorTool/Editor/UIBuilder/PrefabEditorTool.uxml");
         visualTreeAsset.CloneTree(root);
 
         InitCheckTypeList();
