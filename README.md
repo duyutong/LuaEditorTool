@@ -12,3 +12,16 @@ for i = 0, textComponents.Length - 1 do
 		checkDirty = true
 	end
 end
+
+
+-- 这是一个为所有按钮添加点击音效组件的示例
+local btnComponents= prefab:GetComponentsInChildren(typeof(CS.UnityEngine.UI.Button))
+
+for i = 0, btnComponents.Length - 1 do
+	local trans = btnComponents[i].transform;
+	local clickSound = trans:GetComponent(typeof(CS.ClickSound)) ;
+	if clickSound == nil  then
+		trans.gameObject:AddComponent(typeof(CS.ClickSound))
+		checkDirty = true
+	end
+end
