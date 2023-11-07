@@ -112,7 +112,7 @@ public class LuaEditorTool : EditorWindow
         luaStr.AppendLine(luaScriptBottom.text);
 
         prefabPathList.Clear();
-        CheckRes(prefabPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
+        EditorUtilityExtensions.CheckRes(prefabPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
         //Debug.Log(luaStr.ToString());
         string dataPath = Application.dataPath.Replace("/", @"\") + @"\";
         if (objToggle.value) scriptEnv.Set(objTableName, objectField.value);
@@ -160,28 +160,6 @@ public class LuaEditorTool : EditorWindow
             label = DragAndDrop.paths[0];
         }
         return label;
-    }
-    private void CheckRes(string path, string extension, Action<string> action = null)
-    {
-        if (string.IsNullOrEmpty(path)) return;
-        if (File.Exists(path)) 
-        {
-            FileInfo fileInfo = new FileInfo(path);
-            action?.Invoke(fileInfo.FullName);
-        }
-        else
-        {
-            string[] vs = Directory.GetDirectories(path);
-            foreach (string v in vs) { CheckRes(v, extension, action); }
-            DirectoryInfo directory = Directory.CreateDirectory(path);
-            FileInfo[] fileInfos = directory.GetFiles();
-            foreach (FileInfo info in fileInfos)
-            {
-                if (string.IsNullOrEmpty(info.FullName)) continue;
-                if (info.Extension != extension) continue;
-                action?.Invoke(info.FullName);
-            }
-        }
     }
     private void OnDisable()
     {

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 using System.Text;
+using Unity.VisualScripting;
 
 public class DependentFinder : EditorWindow
 {
@@ -21,11 +22,11 @@ public class DependentFinder : EditorWindow
     private string checkAssetsPath;
     private List<string> checkTypeList = new List<string>();
     private List<string> prefabPathList = new List<string>();
-    private List<SDependenciesInfo> dependenciesList = new List<SDependenciesInfo>();
+    private List<DependenciesInfo> dependenciesList = new List<DependenciesInfo>();
 
     private string checkTypeName;
     private string checkAssetName;
-    [MenuItem("Tools/DependentFinder")]
+    [MenuItem("Tools/DependentFinder(≤È’““¿¿µ◊ ‘¥)")]
     public static void ShowExample()
     {
         DependentFinder wnd = GetWindow<DependentFinder>();
@@ -38,7 +39,7 @@ public class DependentFinder : EditorWindow
     {
         // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
-        visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/DependentFinder/Editor/UIBuilder/DependentFinder.uxml");
+        visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/Plugins/DependentFinder/Editor/UIBuilder/DependentFinder.uxml");
         visualTreeAsset.CloneTree(root);
 
         InitCheckTypeList();
@@ -88,42 +89,42 @@ public class DependentFinder : EditorWindow
         checkTypeList.Add(typeof(Texture2D).FullName);
         checkTypeList.Add(typeof(Sprite).FullName);
     }
-    private void OnClickExecuteBtn() 
+    private void OnClickExecuteBtn()
     {
         prefabPathList.Clear();
         dependenciesList.Clear();
         targetScrollView.contentContainer.Clear();
 
-        CheckRes(checkAssetsPath, ".unity", (_path) => { prefabPathList.Add(_path); });
-        CheckRes(checkAssetsPath, ".mat", (_path) => { prefabPathList.Add(_path); });
-        CheckRes(checkAssetsPath, ".fbx", (_path) => { prefabPathList.Add(_path); });
-        CheckRes(checkAssetsPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
+        EditorUtilityExtensions.CheckRes(checkAssetsPath, ".unity", (_path) => { prefabPathList.Add(_path); });
+        EditorUtilityExtensions.CheckRes(checkAssetsPath, ".mat", (_path) => { prefabPathList.Add(_path); });
+        EditorUtilityExtensions.CheckRes(checkAssetsPath, ".fbx", (_path) => { prefabPathList.Add(_path); });
+        EditorUtilityExtensions.CheckRes(checkAssetsPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
 
-        string dataPath = Application.dataPath.Replace("/", @"\") + @"\";
         for (int i = 0; i < prefabPathList.Count; i++)
         {
             int index = i;
             string _path = prefabPathList[index];
-            string shortPath = "Assets" + @"\" + _path.Replace(dataPath, "");
+            string shortPath = _path.ToShortPath();
             UnityEngine.Object checkObj = AssetDatabase.LoadAssetAtPath(shortPath, typeof(UnityEngine.Object));
 
             GetDependenciesInfo(checkObj, shortPath);
         }
-        foreach (SDependenciesInfo info in dependenciesList) 
+        dependenciesList.RemoveDuplicates((_item) => { return _item.targetPath; });
+        foreach (DependenciesInfo info in dependenciesList)
         {
             TextField targetPathField = new TextField("target");
             targetPathField.label = "   °˙";
             targetPathField.multiline = true;
             targetPathField.isReadOnly = true;
             targetPathField.value = info.targetPath;
-            targetPathField.RegisterCallback<MouseDownEvent>((evt) => 
+            targetPathField.RegisterCallback<MouseDownEvent>((evt) =>
             {
                 EditorGUIUtility.PingObject(info.targetObj);
             });
             targetScrollView.Add(targetPathField);
         }
     }
-    private void GetDependenciesInfo(UnityEngine.Object targetObject,string shortPath) 
+    private void GetDependenciesInfo(UnityEngine.Object targetObject, string shortPath)
     {
         if (targetObject != null)
         {
@@ -132,10 +133,14 @@ public class DependentFinder : EditorWindow
             foreach (UnityEngine.Object dependency in dependencies)
             {
                 Debug.Log(targetObject + "  Dependency: " + dependency.name + ", Type: " + dependency.GetType());
-                if (dependency.GetType().FullName != checkTypeName) continue;
-                if (dependency.name != checkAssetName) continue;
 
-                SDependenciesInfo info = new SDependenciesInfo();
+                if (!dependency.GetType().FullName.ToLower().Contains(checkTypeName.ToLower())) continue;
+                bool objNameCheck = dependency.name.Contains(checkAssetName);
+                bool fileNameCheck = AssetDatabase.GetAssetPath(dependency).Contains(checkAssetName);
+
+                if (!objNameCheck && !fileNameCheck) continue;
+
+                DependenciesInfo info = new DependenciesInfo();
                 info.targetObj = targetObject;
                 info.dependency = dependency.name;
                 info.dependencyType = dependency.GetType().FullName;
@@ -148,28 +153,6 @@ public class DependentFinder : EditorWindow
             Debug.LogWarning("No game object selected.");
         }
     }
-    private void CheckRes(string path, string extension, Action<string> action = null)
-    {
-        if (string.IsNullOrEmpty(path)) return;
-        if (File.Exists(path))
-        {
-            FileInfo fileInfo = new FileInfo(path);
-            action?.Invoke(fileInfo.FullName);
-        }
-        else
-        {
-            string[] vs = Directory.GetDirectories(path);
-            foreach (string v in vs) { CheckRes(v, extension, action); }
-            DirectoryInfo directory = Directory.CreateDirectory(path);
-            FileInfo[] fileInfos = directory.GetFiles();
-            foreach (FileInfo info in fileInfos)
-            {
-                if (string.IsNullOrEmpty(info.FullName)) continue;
-                if (info.Extension != extension) continue;
-                action?.Invoke(info.FullName);
-            }
-        }
-    }
     private void OnPathValueChange(ChangeEvent<string> evt)
     {
         checkAssetsPath = evt.newValue;
@@ -178,7 +161,7 @@ public class DependentFinder : EditorWindow
     {
         checkAssetsPath = OnDrawElementAcceptDrop(pathField.contentRect, checkAssetsPath);
         pathField.SetValueWithoutNotify(checkAssetsPath);
-        executeBtn.SetEnabled(!string.IsNullOrEmpty(checkAssetsPath) 
+        executeBtn.SetEnabled(!string.IsNullOrEmpty(checkAssetsPath)
             && !string.IsNullOrEmpty(checkTypeName)
             && !string.IsNullOrEmpty(checkAssetName));
     }
@@ -197,13 +180,14 @@ public class DependentFinder : EditorWindow
 
     private void OnDisable()
     {
+        executeBtn.clicked -= OnClickExecuteBtn;
         pathField.UnregisterValueChangedCallback(OnPathValueChange);
         assetNameField.UnregisterValueChangedCallback(OnCheckAssetNameChange);
         typeDropdownField.UnregisterValueChangedCallback(OnCheckAssetTypeChange);
         checkTypeNameField.UnregisterValueChangedCallback(OnCheckAssetTypeChange);
     }
 }
-public struct SDependenciesInfo
+public class DependenciesInfo
 {
     public UnityEngine.Object targetObj;
     public string targetPath;

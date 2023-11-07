@@ -105,7 +105,7 @@ public class PrefabEditorTool : EditorWindow
     {
         prefabPathList.Clear();
         stringBuilder.Clear();
-        CheckRes(prefabPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
+        EditorUtilityExtensions.CheckRes(prefabPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
         string dataPath = Application.dataPath.Replace("/", @"\") + @"\";
         string checkTypeName = typeDropdownField.value;
         Type checkType = GetTypeByName(checkTypeName);
@@ -197,28 +197,6 @@ public class PrefabEditorTool : EditorWindow
         GUID guid = AssetDatabase.GUIDFromAssetPath(_savePath);
         EditorUtility.SetDirty(saveObj);
         AssetDatabase.SaveAssetIfDirty(guid);
-    }
-    private void CheckRes(string path, string extension, Action<string> action = null)
-    {
-        if (string.IsNullOrEmpty(path)) return;
-        if (File.Exists(path))
-        {
-            FileInfo fileInfo = new FileInfo(path);
-            action?.Invoke(fileInfo.FullName);
-        }
-        else
-        {
-            string[] vs = Directory.GetDirectories(path);
-            foreach (string v in vs) { CheckRes(v, extension, action); }
-            DirectoryInfo directory = Directory.CreateDirectory(path);
-            FileInfo[] fileInfos = directory.GetFiles();
-            foreach (FileInfo info in fileInfos)
-            {
-                if (string.IsNullOrEmpty(info.FullName)) continue;
-                if (info.Extension != extension) continue;
-                action?.Invoke(info.FullName);
-            }
-        }
     }
     public string FindChildAddress(Transform childTransform)
     {
