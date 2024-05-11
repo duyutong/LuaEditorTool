@@ -29,6 +29,7 @@ end
 
 
 -- 这是一个修改InputField设置的示例
+
 local inputComponents= prefab:GetComponentsInChildren(typeof(CS.UnityEngine.UI.InputField))
 
 for i = 0, inputComponents.Length - 1 do
