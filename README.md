@@ -26,3 +26,19 @@ for i = 0, btnComponents.Length - 1 do
 		checkDirty = true
 	end
 end
+
+
+-- 这是一个修改InputField设置的示例
+local inputComponents= prefab:GetComponentsInChildren(typeof(CS.UnityEngine.UI.InputField))
+
+for i = 0, inputComponents.Length - 1 do
+	local input = inputComponents[i]
+	if input ~= nil  and  input .contentType == CS.UnityEngine.UI.InputField. ContentType. Name then
+		input .contentType = CS.UnityEngine.UI.InputField. ContentType. Standard
+		checkDirty = true
+	end
+end
+
+if checkDirty == true then 
+	print( "changed prefab ",prefab.name)
+end
