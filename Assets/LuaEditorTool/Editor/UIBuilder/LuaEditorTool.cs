@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using XLua;
 using System.Text;
 using UnityEditor.UIElements;
-using Unity.VisualScripting;
 
 public class LuaEditorTool : EditorWindow
 {
@@ -41,7 +40,6 @@ public class LuaEditorTool : EditorWindow
         wnd.minSize = new Vector2(670, 320);
         wnd.maxSize = new Vector2(1000, 600);
     }
-
     public void CreateGUI()
     {
         luaEnv = new LuaEnv();
