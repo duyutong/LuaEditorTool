@@ -143,6 +143,9 @@ public class LuaEditorTool : EditorWindow
     }
     private void OnGUI()
     {
+        if (pathField == null) return;
+        if(executeBtn == null)return;
+
         prefabPath = OnDrawElementAcceptDrop(pathField.contentRect, prefabPath);
         pathField.SetValueWithoutNotify(prefabPath);
         executeBtn.SetEnabled(!string.IsNullOrEmpty(prefabPath));
