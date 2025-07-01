@@ -1,4 +1,4 @@
-using UnityEditor;
+ï»¿using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System;
@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using XLua;
 using System.Text;
 using UnityEditor.UIElements;
+using System.Linq;
 
 public class LuaEditorTool : EditorWindow
 {
@@ -19,15 +20,18 @@ public class LuaEditorTool : EditorWindow
     private ObjectField objectField;
     private Toggle objToggle;
 
-    private string objTableName = "asset";
-    private string prefabTableName = "prefab";
+    private string assetTableName = "asset";
+    private string objectTableName = "object";
     private string dirtyTableName = "checkDirty";
 
     private TextField pathField;
-    private string prefabPath;
+    private TextField extensionField;
     private Button executeBtn;
 
-    private List<string> prefabPathList = new List<string>();
+    private string objectPath;
+    private string extensionStr;
+    private HashSet<string> extension;
+    private List<string> objectPathList = new List<string>();
     private LuaTable scriptEnv;
 
     private bool checkDirty;
@@ -45,7 +49,7 @@ public class LuaEditorTool : EditorWindow
         luaEnv = new LuaEnv();
         scriptEnv = luaEnv.NewTable();
 
-        // ÎªÃ¿¸ö½Å±¾ÉèÖÃÒ»¸ö¶ÀÁ¢µÄ»·¾³£¬¿ÉÒ»¶¨³Ì¶ÈÉÏ·ÀÖ¹½Å±¾¼äÈ«¾Ö±äÁ¿¡¢º¯Êı³åÍ»
+        // ä¸ºæ¯ä¸ªè„šæœ¬è®¾ç½®ä¸€ä¸ªç‹¬ç«‹çš„ç¯å¢ƒï¼Œå¯ä¸€å®šç¨‹åº¦ä¸Šé˜²æ­¢è„šæœ¬é—´å…¨å±€å˜é‡ã€å‡½æ•°å†²çª
         LuaTable meta = luaEnv.NewTable();
         meta.Set("__index", luaEnv.Global);
         scriptEnv.SetMetaTable(meta);
@@ -69,14 +73,17 @@ public class LuaEditorTool : EditorWindow
         pathField = root.Q<TextField>("pathField");
         pathField.RegisterValueChangedCallback(OnPathValueChange);
 
+        extensionField = root.Q<TextField>("extensionField");
+        extensionField.RegisterValueChangedCallback(OnExtensionValueChange);
+
         executeBtn = root.Q<Button>("executeBtn");
         executeBtn.clicked += OnClickExecuteBtn;
         executeBtn.SetEnabled(false);
 
         luaScriptTop = root.Q<TextField>("luaScriptTop");
         string luaTop = luaScriptTop.text;
-        luaTop = luaTop.Replace("#prefabTableName#", prefabTableName);
-        luaTop = luaTop.Replace("#assetName#", objTableName);
+        luaTop = luaTop.Replace("#objectTableName#", objectTableName);
+        luaTop = luaTop.Replace("#assetName#", assetTableName);
         luaTop = luaTop.Replace("#dirtyTableName#", dirtyTableName);
         luaScriptTop.SetValueWithoutNotify(luaTop);
         luaScriptTop.SetEnabled(false);
@@ -86,8 +93,13 @@ public class LuaEditorTool : EditorWindow
 
         luaScript = root.Q<TextField>("luaScript");
         string lua = luaScript.text;
-        lua = lua.Replace("#prefabTableName#", prefabTableName);
+        lua = lua.Replace("#objectTableName#", objectTableName);
         luaScript.SetValueWithoutNotify(lua);
+    }
+
+    private void OnExtensionValueChange(ChangeEvent<string> evt)
+    {
+        extensionStr = evt.newValue;
     }
 
     private void OnObjToggleChanged(ChangeEvent<bool> evt)
@@ -98,7 +110,7 @@ public class LuaEditorTool : EditorWindow
 
     private void OnPathValueChange(ChangeEvent<string> evt)
     {
-        prefabPath = evt.newValue;
+        objectPath = evt.newValue;
     }
 
     private StringBuilder luaStr = new StringBuilder();
@@ -109,32 +121,32 @@ public class LuaEditorTool : EditorWindow
         luaStr.AppendLine(luaScript.text);
         luaStr.AppendLine(luaScriptBottom.text);
 
-        prefabPathList.Clear();
-        EditorUtilityExtensions.CheckRes(prefabPath, ".prefab", (_path) => { prefabPathList.Add(_path); });
+        objectPathList.Clear();
+        extension = extensionStr.Split("|").ToHashSet();
+        foreach (string ext in extension) EditorUtilityExtensions.CheckRes(objectPath, ext, (_path) => { objectPathList.Add(_path); });
         //Debug.Log(luaStr.ToString());
         string dataPath = Application.dataPath.Replace("/", @"\") + @"\";
-        if (objToggle.value) scriptEnv.Set(objTableName, objectField.value);
-        for (int i = 0; i < prefabPathList.Count; i++)
+        if (objToggle.value) scriptEnv.Set(assetTableName, objectField.value);
+        for (int i = 0; i < objectPathList.Count; i++)
         {
             int index = i;
-            string _path = prefabPathList[index];
+            string _path = objectPathList[index];
             string shortPath = "Assets" + @"\" + _path.Replace(dataPath, "");
-            GameObject prefab = AssetDatabase.LoadAssetAtPath(shortPath, typeof(GameObject)) as GameObject;
-            scriptEnv.Set(prefabTableName, prefab);
+            UnityEngine.Object targetObj = AssetDatabase.LoadAssetAtPath(shortPath, typeof(UnityEngine.Object));
+            scriptEnv.Set(objectTableName, targetObj);
             luaEnv.DoString(luaStr.ToString(), null, scriptEnv);
             scriptEnv.Get(dirtyTableName, out checkDirty);
-            //Debug.Log(prefab.name + " checkDirty£º" + checkDirty);
-            if (checkDirty) 
+            if (checkDirty)
             {
-                EditorUtility.SetDirty(prefab);
-                ReplacePrefab(shortPath, prefab);
+                EditorUtility.SetDirty(targetObj);
+                ReplaceObject(shortPath, targetObj);
             }
         }
-        
+
         AssetDatabase.SaveAssets();
-        Debug.Log("´¦ÀíÍê±Ï£¡");
+        Debug.Log("å¤„ç†å®Œæ¯•ï¼");
     }
-    private void ReplacePrefab(string savePath,GameObject saveObj)
+    private void ReplaceObject(string savePath, UnityEngine.Object saveObj)
     {
         string _savePath = savePath.Replace(@"\", "/");
         GUID guid = AssetDatabase.GUIDFromAssetPath(_savePath);
@@ -144,11 +156,16 @@ public class LuaEditorTool : EditorWindow
     private void OnGUI()
     {
         if (pathField == null) return;
-        if(executeBtn == null)return;
+        if (executeBtn == null) return;
 
-        prefabPath = OnDrawElementAcceptDrop(pathField.contentRect, prefabPath);
-        pathField.SetValueWithoutNotify(prefabPath);
-        executeBtn.SetEnabled(!string.IsNullOrEmpty(prefabPath));
+        objectPath = OnDrawElementAcceptDrop(pathField.contentRect, objectPath);
+        
+        pathField.SetValueWithoutNotify(objectPath);
+        
+        executeBtn.SetEnabled(!string.IsNullOrEmpty(objectPath));
+
+        if (string.IsNullOrEmpty(extensionStr)) extensionStr = ".prefab";
+        extensionField.SetValueWithoutNotify(extensionStr);
     }
     private string OnDrawElementAcceptDrop(Rect rect, string label)
     {
