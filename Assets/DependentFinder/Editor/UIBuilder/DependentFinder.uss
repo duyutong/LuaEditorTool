@@ -1,5 +1,13 @@
-Label {
-    font-size: 20px;
-    -unity-font-style: bold;
-    color: rgb(68, 138, 255);
+.unity-label {
+    width: 80px;
+    min-width: 60px;
+    margin-left: 3px;
+    -unity-text-align: middle-left;
+}
+.executeBtn {
+    width: 100px;
+    right: auto;
+    position: relative;
+    transform-origin: center;
+    display: flex;
 }

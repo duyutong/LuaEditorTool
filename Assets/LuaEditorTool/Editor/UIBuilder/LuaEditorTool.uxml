@@ -8,7 +8,7 @@
         <uie:ObjectField label="Asset Field" name="objectField" type="UnityEngine.Object, UnityEngine.CoreModule" style="flex-grow: 1; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;" />
         <ui:Toggle name="objToggle" value="false" label="needAsset" />
     </ui:VisualElement>
-    <ui:Label text="*Please enter your Lua code in the input box below:" display-tooltip-when-elided="true" style="padding-top: 2px;" />
+    <ui:Label text="*Please enter your Lua code in the input box below:" display-tooltip-when-elided="true" class="testxxx" style="padding-top: 2px;" />
     <ui:ScrollView style="flex-grow: 1; background-color: rgb(56, 56, 56); border-top-width: 0; border-top-left-radius: 3px; border-bottom-left-radius: 3px; border-top-right-radius: 3px; border-bottom-right-radius: 3px; margin-top: 10px; margin-bottom: 10px; padding-bottom: 0; -unity-slice-bottom: 0; padding-left: 10px; padding-right: 10px;">
         <ui:TextField picking-mode="Ignore" value="filler text" text="-- lua代码开始&#10;&#10;#dirtyTableName# = false&#10;&#10;if #objectTableName# ~= nil then&#10;&#x9;-- 预制体处理逻辑&#10;&#x9;-- 如果需要保存预制，将#dirtyTableName# 置为true&#10;&#x9;-- 如果需要处理资源，资源名为#assetName#" multiline="true" focusable="true" name="luaScriptTop" style="height: auto; align-items: center; margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;" />
         <ui:VisualElement style="background-color: rgb(42, 42, 42);">

@@ -1,4 +1,4 @@
-using UnityEditor;
+Ôªøusing UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
@@ -26,7 +26,7 @@ public class DependentFinder : EditorWindow
 
     private string checkTypeName;
     private string checkAssetName;
-    [MenuItem("Tools/DependentFinder(≤È’““¿¿µ◊ ‘¥)")]
+    [MenuItem("Tools/DependentFinder(Êü•Êâæ‰æùËµñËµÑÊ∫ê)")]
     public static void ShowExample()
     {
         DependentFinder wnd = GetWindow<DependentFinder>();
@@ -37,14 +37,13 @@ public class DependentFinder : EditorWindow
 
     public void CreateGUI()
     {
-        // Each editor window contains a root VisualElement object
         VisualElement root = rootVisualElement;
         visualTreeAsset = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>("Assets/DependentFinder/Editor/UIBuilder/DependentFinder.uxml");
         visualTreeAsset.CloneTree(root);
 
         InitCheckTypeList();
 
-        pathField = root.Q<TextField>("pathField");
+        pathField = root.Q<TextField>("pathField");//Q:Query - Êü•ËØ¢„ÄÅË¥®ÈóÆ„ÄÅÁñëÈóÆ
         pathField.RegisterValueChangedCallback(OnPathValueChange);
 
         targetScrollView = root.Q<ScrollView>("targetScrollView");
@@ -66,20 +65,16 @@ public class DependentFinder : EditorWindow
         executeBtn = root.Q<Button>("executeBtn");
         executeBtn.clicked += OnClickExecuteBtn;
         executeBtn.SetEnabled(true);
-
     }
-
     private void OnCheckAssetTypeChange(ChangeEvent<string> evt)
     {
         checkTypeName = evt.newValue;
         checkTypeNameField.SetEnabled(typeDropdownField.value == "Custom");
     }
-
     private void OnCheckAssetNameChange(ChangeEvent<string> evt)
     {
         checkAssetName = evt.newValue;
     }
-
     private void InitCheckTypeList()
     {
         checkTypeList.Clear();
@@ -113,7 +108,7 @@ public class DependentFinder : EditorWindow
         foreach (DependenciesInfo info in dependenciesList)
         {
             TextField targetPathField = new TextField("target");
-            targetPathField.label = "   °˙";
+            targetPathField.label = "   ‚Üí";
             targetPathField.multiline = true;
             targetPathField.isReadOnly = true;
             targetPathField.value = info.targetPath;
@@ -177,7 +172,6 @@ public class DependentFinder : EditorWindow
         }
         return label;
     }
-
     private void OnDisable()
     {
         executeBtn.clicked -= OnClickExecuteBtn;

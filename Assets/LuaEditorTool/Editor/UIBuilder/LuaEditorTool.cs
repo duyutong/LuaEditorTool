@@ -1,8 +1,6 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System;
-using System.IO;
 using System.Collections.Generic;
 using XLua;
 using System.Text;
@@ -142,7 +140,6 @@ public class LuaEditorTool : EditorWindow
                 ReplaceObject(shortPath, targetObj);
             }
         }
-
         AssetDatabase.SaveAssets();
         Debug.Log("处理完毕！");
     }

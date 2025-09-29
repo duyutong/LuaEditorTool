@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/PrefabEditorTool/Editor/Resources/UIBuilder/PrefabEditorTool.uss?fileID=7433441132597879392&amp;guid=88e54775dfa77a14489bb9f5336e7a79&amp;type=3#PrefabEditorTool" />
+    <Style src="project://database/Assets/PrefabEditorTool/Editor/UIBuilder/PrefabEditorTool.uss?fileID=7433441132597879392&amp;guid=88e54775dfa77a14489bb9f5336e7a79&amp;type=3#PrefabEditorTool" />
     <ui:TextField picking-mode="Ignore" label="Path Field" value="filler text" text="filler text" name="pathField" style="width: auto; min-width: 60px; max-width: 500px;" />
     <ui:DropdownField label="CheckType" index="-1" choices="System.Collections.Generic.List`1[System.String]" name="typeDropdownField" style="max-width: 500px;" />
     <ui:VisualElement style="flex-direction: row; margin-left: 3px; margin-right: 3px; margin-top: 1px; margin-bottom: 1px;">
